@@ -10,7 +10,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
-@Document(collection = "wishlists")
+@Document(collection = "wishlist")
 public class Wishlist {
 
   @Id

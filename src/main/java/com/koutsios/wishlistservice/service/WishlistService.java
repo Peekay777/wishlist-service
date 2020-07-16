@@ -4,4 +4,8 @@ import com.koutsios.wishlistservice.domain.Wishlist;
 
 public interface WishlistService {
   Wishlist newWishlist(String userId, String wishlistName);
+
+  void deleteWishlist(String wishlistId);
+
+  Wishlist getWishlist(String wishlistId);
 }
