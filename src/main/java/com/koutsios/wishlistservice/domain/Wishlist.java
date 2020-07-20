@@ -3,13 +3,17 @@ package com.koutsios.wishlistservice.domain;
 import java.util.List;
 import java.util.Map;
 import javax.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Data
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Document(collection = "wishlist")
 public class Wishlist {
 

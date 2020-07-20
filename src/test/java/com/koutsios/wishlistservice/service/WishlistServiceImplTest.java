@@ -18,12 +18,17 @@ import com.koutsios.wishlistservice.domain.Wishlist;
 import com.koutsios.wishlistservice.exception.WishlistNotFoundException;
 import com.koutsios.wishlistservice.repository.WishlistRepository;
 import java.util.Optional;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
+@DisplayName("Wishlist Service test")
+@TestMethodOrder(MethodOrderer.Alphanumeric.class)
 class WishlistServiceImplTest {
 
   @Autowired
@@ -33,6 +38,7 @@ class WishlistServiceImplTest {
   private WishlistRepository repository;
 
   @Test
+  @DisplayName("newWishlist - Create new wishlist successfully")
   void newWishlist_success() {
     when(repository.save(any(Wishlist.class))).thenReturn(aNewWishlist());
 
@@ -46,7 +52,8 @@ class WishlistServiceImplTest {
   }
 
   @Test
-  void deleteWishlsit_sucess() {
+  @DisplayName("deleteWishlist - Delete wishlist successfully")
+  void deleteWishlist_success() {
     when(repository.existsById(anyString())).thenReturn(true);
     doNothing().when(repository).deleteById(anyString());
 
@@ -57,7 +64,8 @@ class WishlistServiceImplTest {
   }
 
   @Test
-  void deleteWishlsit_InvalidWishlistId() {
+  @DisplayName("deleteWishlist - Invalid wishlistId - WishlistNotFoundException")
+  void deleteWishlist_InvalidWishlistId() {
     when(repository.existsById(anyString())).thenReturn(false);
 
     assertThrows(WishlistNotFoundException.class, () -> wishlistService.deleteWishlist("wishlistId"));
@@ -65,6 +73,7 @@ class WishlistServiceImplTest {
   }
 
   @Test
+  @DisplayName("getWishlist - Retrieve wishlist successfully")
   void getWishlist_success() {
     Wishlist expectedWishlist = aWishlist();
     when(repository.findById(anyString())).thenReturn(of(expectedWishlist));
@@ -73,6 +82,15 @@ class WishlistServiceImplTest {
 
     assertNotNull(actualWishlist);
     assertSame(expectedWishlist, actualWishlist);
+    verify(repository).findById(anyString());
+  }
+
+  @Test
+  @DisplayName("getWishlist - Invalid wishlistId - WIshlistNotFoundException")
+  void getWishlist_InvalidWishlistId() {
+    when(repository.findById(anyString())).thenReturn(Optional.empty());
+
+    assertThrows(WishlistNotFoundException.class, () -> wishlistService.getWishlist("wishlistId"));
     verify(repository).findById(anyString());
   }
 }
