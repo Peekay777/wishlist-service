@@ -1,8 +1,14 @@
 package com.koutsios.wishlistservice.integration;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -34,23 +40,51 @@ class WishlistServiceIntegrationTests extends AbstractIntegrationTestWithMongoDb
 	private WishlistRepository repository;
 
 	@Test
-	@DisplayName("Create new wishlist")
-	void createNewWishlist() throws Exception {
+	@DisplayName("Given a user Id and a wishlist name then create new wishlist")
+	void createNewWishlistSuccess() throws Exception {
 		String userId = "userIdExample";
 		String wishlistName = "wishlistNameExample";
 
-		String response = mockMvc.perform(post("/wishlist/{userId}/{wishlistName}", userId, wishlistName))
+		Wishlist wishlistResponse = createWishlist(userId, wishlistName, mockMvc, objectMapper);
+
+		Wishlist wishlist = repository.findById(wishlistResponse.getId()).orElseThrow();
+		assertEquals(wishlistResponse.getUserId(), wishlist.getUserId());
+		assertEquals(wishlistResponse.getName(), wishlist.getName());
+	}
+
+	@Test
+	@DisplayName("Given a wishlist Id then return wishlist object")
+	void getWishlist_success() throws Exception {
+		String userId = "userIdExample";
+		String wishlistName = "wishlistNameExample";
+		Wishlist createResponse = createWishlist(userId, wishlistName, mockMvc, objectMapper);
+		String wishlistId = createResponse.getId();
+
+		String response = mockMvc.perform(get("/wishlist/{wishlistId}", wishlistId))
 				.andExpect(status().isOk())
+				.andExpect(jsonPath("$.userId", is(userId)))
+				.andExpect(jsonPath("$.name", is(wishlistName)))
 				.andReturn()
 				.getResponse()
 				.getContentAsString();
 		Wishlist wishlistResponse = objectMapper.readValue(response, Wishlist.class);
 
-		assertNotNull(wishlistResponse);
-		assertEquals(userId, wishlistResponse.getUserId());
-		assertEquals(wishlistName, wishlistResponse.getName());
-		Wishlist wishlist = repository.findById(wishlistResponse.getId()).orElseThrow();
-		assertEquals(userId, wishlist.getUserId());
-		assertEquals(wishlistName, wishlist.getName());
+		Wishlist wishlistDb = repository.findById(wishlistId).orElseThrow();
+		assertEquals(wishlistResponse.getUserId(), wishlistDb.getUserId());
+		assertEquals(wishlistResponse.getName(), wishlistDb.getName());
+		assertThat(wishlistDb.getWanted()).isEqualTo(wishlistResponse.getWanted());
+	}
+
+	private static Wishlist createWishlist(String userId, String wishlistName, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
+		String response = mockMvc.perform(post("/wishlist/{userId}/{wishlistName}", userId, wishlistName))
+				.andExpect(status().isOk())
+				.andExpect(jsonPath("$", notNullValue()))
+				.andExpect(jsonPath("$.userId", is(userId)))
+				.andExpect(jsonPath("$.name", is(wishlistName)))
+				.andExpect(jsonPath("$.wanted").isEmpty())
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+		return objectMapper.readValue(response, Wishlist.class);
 	}
 }

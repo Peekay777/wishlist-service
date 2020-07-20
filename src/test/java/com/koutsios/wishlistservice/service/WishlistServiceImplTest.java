@@ -27,7 +27,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
 @SpringBootTest
-@DisplayName("Wishlist Service test")
+@DisplayName("Wishlist Service method test")
 @TestMethodOrder(MethodOrderer.Alphanumeric.class)
 class WishlistServiceImplTest {
 
