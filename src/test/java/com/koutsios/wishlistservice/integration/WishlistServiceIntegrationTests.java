@@ -4,15 +4,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.koutsios.wishlistservice.AbstractIntegrationTestWithMongoDb;
 import com.koutsios.wishlistservice.domain.Wishlist;
 import com.koutsios.wishlistservice.repository.WishlistRepository;
 import org.junit.jupiter.api.DisplayName;
@@ -73,6 +73,45 @@ class WishlistServiceIntegrationTests extends AbstractIntegrationTestWithMongoDb
 		assertEquals(wishlistResponse.getUserId(), wishlistDb.getUserId());
 		assertEquals(wishlistResponse.getName(), wishlistDb.getName());
 		assertThat(wishlistDb.getWanted()).isEqualTo(wishlistResponse.getWanted());
+	}
+
+	@Test
+	@DisplayName("Given an invalid wishlist Id then return status 404 NotFound")
+	void getWishlist_invalidWishlistId_404NotFound() throws Exception {
+		String wishlistId = "InvalidId";
+		mockMvc.perform(get("/wishlist/{wishlistId}", wishlistId))
+				.andExpect(status().isNotFound())
+				.andExpect(content().string("Could find Wishlist " + wishlistId))
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
+	}
+
+	@Test
+	@DisplayName("When deleting, given a wishlist Id then delete wishlist")
+	void deleteWishlist_success() throws Exception {
+		String userId = "userIdExample";
+		String wishlistName = "wishlistNameExample";
+		Wishlist createResponse = createWishlist(userId, wishlistName, mockMvc, objectMapper);
+		String wishlistId = createResponse.getId();
+
+		mockMvc.perform(delete("/wishlist/{wishlistId}", wishlistId))
+				.andExpect(status().isOk());
+
+		Wishlist wishlistDb = repository.findById(wishlistId).orElse(null);
+		assertNull(wishlistDb);
+	}
+
+	@Test
+	@DisplayName("When deleting, given an invalid wishlist Id then return status 404 NotFound")
+	void deleteWishlist_invalidWishlistId_404NotFound() throws Exception {
+		String wishlistId = "InvalidId";
+		mockMvc.perform(delete("/wishlist/{wishlistId}", wishlistId))
+				.andExpect(status().isNotFound())
+				.andExpect(content().string("Could find Wishlist " + wishlistId))
+				.andReturn()
+				.getResponse()
+				.getContentAsString();
 	}
 
 	private static Wishlist createWishlist(String userId, String wishlistName, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {

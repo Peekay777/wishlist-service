@@ -1,4 +1,4 @@
-package com.koutsios.wishlistservice;
+package com.koutsios.wishlistservice.integration;
 
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodProcess;
