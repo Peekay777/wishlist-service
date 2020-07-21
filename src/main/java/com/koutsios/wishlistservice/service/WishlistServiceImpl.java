@@ -1,6 +1,7 @@
 package com.koutsios.wishlistservice.service;
 
 import com.koutsios.wishlistservice.domain.Wishlist;
+import com.koutsios.wishlistservice.dto.UpdateWishlist;
 import com.koutsios.wishlistservice.exception.WishlistNotFoundException;
 import com.koutsios.wishlistservice.repository.WishlistRepository;
 import java.util.HashMap;
@@ -36,6 +37,15 @@ public class WishlistServiceImpl implements WishlistService {
   public Wishlist getWishlist(String wishlistId) {
     return repository.findById(wishlistId)
         .orElseThrow(() -> new WishlistNotFoundException(wishlistId));
+  }
+
+  @Override
+  public Wishlist updateWishlist(String wishlistId, UpdateWishlist updateWishlist) {
+    Wishlist wishlist = repository.findById(wishlistId)
+        .orElseThrow(() -> new WishlistNotFoundException(wishlistId));
+    wishlist.setName(updateWishlist.getName());
+    wishlist.setGroupIds(updateWishlist.getGroupIds());
+    return repository.save(wishlist);
   }
 
 }

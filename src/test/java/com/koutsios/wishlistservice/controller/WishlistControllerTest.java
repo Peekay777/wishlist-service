@@ -2,15 +2,21 @@ package com.koutsios.wishlistservice.controller;
 
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.aNewWishlist;
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.aWishlist;
+import static com.koutsios.wishlistservice.fixture.WishlistFixture.anUpdateWishlist;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.koutsios.wishlistservice.dto.UpdateWishlist;
 import com.koutsios.wishlistservice.exception.WishlistNotFoundException;
 import com.koutsios.wishlistservice.service.WishlistService;
 import org.junit.jupiter.api.DisplayName;
@@ -20,6 +26,7 @@ import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = WishlistController.class)
@@ -32,6 +39,9 @@ class WishlistControllerTest {
 
   @MockBean
   private WishlistService wishlistService;
+
+  @Autowired
+  private ObjectMapper objectMapper;
 
   @Test
   @DisplayName("POST Wishlist - 201 Created")
@@ -64,6 +74,32 @@ class WishlistControllerTest {
         .andExpect(status().isNotFound());
 
     verify(wishlistService).getWishlist(anyString());
+  }
+
+  @Test
+  @DisplayName("PUT Wishlist - 201 Created")
+  void putWishlist_success() throws Exception {
+    when(wishlistService.updateWishlist(anyString(), any(UpdateWishlist.class))).thenReturn(aWishlist());
+
+    mockMvc.perform(put("/wishlist/wishlistId")
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(anUpdateWishlist())))
+        .andExpect(status().isCreated());
+
+    verify(wishlistService).updateWishlist(anyString(), any(UpdateWishlist.class));
+  }
+
+  @Test
+  @DisplayName("PUT Wishlist - Given invalid wishlist id - 404 Not Found")
+  void putWishlist_InvalidWishlistId_return404() throws Exception {
+    when(wishlistService.updateWishlist(anyString(), any(UpdateWishlist.class))).thenThrow(new WishlistNotFoundException("wishlistid"));
+
+    mockMvc.perform(put("/wishlist/wishlistId")
+        .contentType(APPLICATION_JSON)
+        .content(objectMapper.writeValueAsString(anUpdateWishlist())))
+        .andExpect(status().isNotFound());
+
+    verify(wishlistService).updateWishlist(anyString(), any(UpdateWishlist.class));
   }
 
   @Test

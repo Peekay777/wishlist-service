@@ -2,6 +2,7 @@ package com.koutsios.wishlistservice.service;
 
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.aNewWishlist;
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.aWishlist;
+import static com.koutsios.wishlistservice.fixture.WishlistFixture.anUpdateWishlist;
 import static java.util.Optional.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -15,6 +16,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 import com.koutsios.wishlistservice.domain.Wishlist;
+import com.koutsios.wishlistservice.dto.UpdateWishlist;
 import com.koutsios.wishlistservice.exception.WishlistNotFoundException;
 import com.koutsios.wishlistservice.repository.WishlistRepository;
 import java.util.Optional;
@@ -52,27 +54,6 @@ class WishlistServiceImplTest {
   }
 
   @Test
-  @DisplayName("deleteWishlist - Delete wishlist successfully")
-  void deleteWishlist_success() {
-    when(repository.existsById(anyString())).thenReturn(true);
-    doNothing().when(repository).deleteById(anyString());
-
-    wishlistService.deleteWishlist("wishlistId");
-
-    verify(repository).existsById(anyString());
-    verify(repository).deleteById(anyString());
-  }
-
-  @Test
-  @DisplayName("deleteWishlist - Invalid wishlistId - WishlistNotFoundException")
-  void deleteWishlist_InvalidWishlistId() {
-    when(repository.existsById(anyString())).thenReturn(false);
-
-    assertThrows(WishlistNotFoundException.class, () -> wishlistService.deleteWishlist("wishlistId"));
-    verify(repository).existsById(anyString());
-  }
-
-  @Test
   @DisplayName("getWishlist - Retrieve wishlist successfully")
   void getWishlist_success() {
     Wishlist expectedWishlist = aWishlist();
@@ -91,6 +72,58 @@ class WishlistServiceImplTest {
     when(repository.findById(anyString())).thenReturn(Optional.empty());
 
     assertThrows(WishlistNotFoundException.class, () -> wishlistService.getWishlist("wishlistId"));
+
     verify(repository).findById(anyString());
+  }
+
+  @Test
+  @DisplayName("updateWishlist - Update wishlist successfully")
+  void updateWishlist_success() {
+    UpdateWishlist updateWishlist = anUpdateWishlist();
+    Wishlist wishlist = aWishlist();
+    Wishlist expectedWishlist = aWishlist();
+    expectedWishlist.setName(updateWishlist.getName());
+    expectedWishlist.setGroupIds(updateWishlist.getGroupIds());
+    when(repository.findById(anyString())).thenReturn(of(wishlist));
+    when(repository.save(any(Wishlist.class))).thenReturn(expectedWishlist);
+
+    Wishlist actualWishlist = wishlistService.updateWishlist("generatedId", updateWishlist);
+
+    assertNotNull(actualWishlist);
+    assertSame(expectedWishlist, actualWishlist);
+    verify(repository).findById(anyString());
+    verify(repository).save(any(Wishlist.class));
+  }
+
+  @Test
+  @DisplayName("updateWishlist - Invalid wishlistId - WIshlistNotFoundException")
+  void updateWishlist_InvalidWishlistId() {
+    UpdateWishlist updateWishlist = anUpdateWishlist();
+    when(repository.findById(anyString())).thenReturn(Optional.empty());
+
+    assertThrows(WishlistNotFoundException.class, () -> wishlistService.updateWishlist("wishlistId", updateWishlist));
+
+    verify(repository).findById(anyString());
+  }
+
+  @Test
+  @DisplayName("deleteWishlist - Delete wishlist successfully")
+  void deleteWishlist_success() {
+    when(repository.existsById(anyString())).thenReturn(true);
+    doNothing().when(repository).deleteById(anyString());
+
+    wishlistService.deleteWishlist("wishlistId");
+
+    verify(repository).existsById(anyString());
+    verify(repository).deleteById(anyString());
+  }
+
+  @Test
+  @DisplayName("deleteWishlist - Invalid wishlistId - WishlistNotFoundException")
+  void deleteWishlist_InvalidWishlistId() {
+    when(repository.existsById(anyString())).thenReturn(false);
+
+    assertThrows(WishlistNotFoundException.class, () -> wishlistService.deleteWishlist("wishlistId"));
+    verify(repository).existsById(anyString());
   }
 }

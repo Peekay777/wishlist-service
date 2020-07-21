@@ -5,8 +5,10 @@ import static com.koutsios.wishlistservice.constant.ProductStatus.AVAILABLE;
 import com.koutsios.wishlistservice.constant.ProductStatus;
 import com.koutsios.wishlistservice.domain.Product;
 import com.koutsios.wishlistservice.domain.Wishlist;
+import com.koutsios.wishlistservice.dto.UpdateWishlist;
 import java.util.HashMap;
 import java.util.Map;
+import org.springframework.data.mongodb.core.query.Update;
 
 public class WishlistFixture {
 
@@ -31,6 +33,13 @@ public class WishlistFixture {
                 .status(AVAILABLE)
                 .build()
         ))
+        .build();
+  }
+
+  public static UpdateWishlist anUpdateWishlist() {
+    return UpdateWishlist.builder()
+        .name("NewWishlistName")
+        .groupIds(null)
         .build();
   }
 }
