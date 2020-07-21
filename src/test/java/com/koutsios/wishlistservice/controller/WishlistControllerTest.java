@@ -34,12 +34,12 @@ class WishlistControllerTest {
   private WishlistService wishlistService;
 
   @Test
-  @DisplayName("POST Wishlist - 200 ok")
+  @DisplayName("POST Wishlist - 201 Created")
   void createNewWishlist_success() throws Exception {
     when(wishlistService.createWishlist(anyString(), anyString())).thenReturn(aNewWishlist());
 
     mockMvc.perform(post("/wishlist/userid/wishlistname"))
-        .andExpect(status().isOk());
+        .andExpect(status().isCreated());
 
     verify(wishlistService).createWishlist(anyString(), anyString());
   }
@@ -67,10 +67,10 @@ class WishlistControllerTest {
   }
 
   @Test
-  @DisplayName("DELETE Wishlist - 200 ok ")
+  @DisplayName("DELETE Wishlist - 204 No Content ")
   void deleteWishlist_success() throws Exception {
     mockMvc.perform(delete("/wishlist/wishlistid"))
-        .andExpect(status().isOk());
+        .andExpect(status().isNoContent());
 
     verify(wishlistService).deleteWishlist(anyString());
   }

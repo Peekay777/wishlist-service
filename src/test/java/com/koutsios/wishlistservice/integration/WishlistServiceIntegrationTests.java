@@ -96,7 +96,7 @@ class WishlistServiceIntegrationTests extends AbstractIntegrationTestWithMongoDb
 		String wishlistId = createResponse.getId();
 
 		mockMvc.perform(delete("/wishlist/{wishlistId}", wishlistId))
-				.andExpect(status().isOk());
+				.andExpect(status().isNoContent());
 
 		Wishlist wishlistDb = repository.findById(wishlistId).orElse(null);
 		assertNull(wishlistDb);
@@ -116,7 +116,7 @@ class WishlistServiceIntegrationTests extends AbstractIntegrationTestWithMongoDb
 
 	private static Wishlist createWishlist(String userId, String wishlistName, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
 		String response = mockMvc.perform(post("/wishlist/{userId}/{wishlistName}", userId, wishlistName))
-				.andExpect(status().isOk())
+				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$", notNullValue()))
 				.andExpect(jsonPath("$.userId", is(userId)))
 				.andExpect(jsonPath("$.name", is(wishlistName)))
