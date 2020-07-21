@@ -14,7 +14,7 @@ public class WishlistServiceImpl implements WishlistService {
   private WishlistRepository repository;
 
   @Override
-  public Wishlist newWishlist(String userId, String wishlistName) {
+  public Wishlist createWishlist(String userId, String wishlistName) {
     Wishlist newWishlist = Wishlist.builder()
         .userId(userId)
         .name(wishlistName)

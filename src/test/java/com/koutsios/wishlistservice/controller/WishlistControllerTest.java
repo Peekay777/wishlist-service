@@ -16,7 +16,6 @@ import com.koutsios.wishlistservice.service.WishlistService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.MethodOrderer;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInfo;
 import org.junit.jupiter.api.TestMethodOrder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -37,12 +36,12 @@ class WishlistControllerTest {
   @Test
   @DisplayName("POST Wishlist - 200 ok")
   void createNewWishlist_success() throws Exception {
-    when(wishlistService.newWishlist(anyString(), anyString())).thenReturn(aNewWishlist());
+    when(wishlistService.createWishlist(anyString(), anyString())).thenReturn(aNewWishlist());
 
     mockMvc.perform(post("/wishlist/userid/wishlistname"))
         .andExpect(status().isOk());
 
-    verify(wishlistService).newWishlist(anyString(), anyString());
+    verify(wishlistService).createWishlist(anyString(), anyString());
   }
 
   @Test

@@ -42,7 +42,7 @@ class WishlistServiceImplTest {
   void newWishlist_success() {
     when(repository.save(any(Wishlist.class))).thenReturn(aNewWishlist());
 
-    Wishlist actualWishlist = wishlistService.newWishlist("userid","wishlistname");
+    Wishlist actualWishlist = wishlistService.createWishlist("userid","wishlistname");
 
     assertNotNull(actualWishlist.getId());
     assertEquals("userid", actualWishlist.getUserId());

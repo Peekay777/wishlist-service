@@ -20,7 +20,7 @@ public class WishlistController {
   @PostMapping("/{userId}/{wishlistName}")
   public Wishlist createWishlist(@PathVariable String userId,
                                  @PathVariable String wishlistName) {
-    return wishlistService.newWishlist(userId, wishlistName);
+    return wishlistService.createWishlist(userId, wishlistName);
   }
 
   @GetMapping("/{wishlistId}")
