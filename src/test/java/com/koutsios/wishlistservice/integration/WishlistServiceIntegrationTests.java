@@ -84,10 +84,7 @@ class WishlistServiceIntegrationTests extends AbstractIntegrationTestWithMongoDb
 		String wishlistId = "InvalidId";
 		mockMvc.perform(get("/wishlist/{wishlistId}", wishlistId))
 				.andExpect(status().isNotFound())
-				.andExpect(content().string("Could find Wishlist " + wishlistId))
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
+				.andExpect(content().string("Could find Wishlist " + wishlistId));
 	}
 
 	@Test
@@ -141,16 +138,14 @@ class WishlistServiceIntegrationTests extends AbstractIntegrationTestWithMongoDb
 		String wishlistId = "InvalidId";
 		mockMvc.perform(delete("/wishlist/{wishlistId}", wishlistId))
 				.andExpect(status().isNotFound())
-				.andExpect(content().string("Could find Wishlist " + wishlistId))
-				.andReturn()
-				.getResponse()
-				.getContentAsString();
+				.andExpect(content().string("Could find Wishlist " + wishlistId));
 	}
 
 	private static Wishlist createWishlist(String userId, String wishlistName, MockMvc mockMvc, ObjectMapper objectMapper) throws Exception {
 		String response = mockMvc.perform(post("/wishlist/{userId}/{wishlistName}", userId, wishlistName))
 				.andExpect(status().isCreated())
 				.andExpect(jsonPath("$", notNullValue()))
+				.andExpect(jsonPath("$.id", notNullValue()))
 				.andExpect(jsonPath("$.userId", is(userId)))
 				.andExpect(jsonPath("$.name", is(wishlistName)))
 				.andExpect(jsonPath("$.wanted").isEmpty())

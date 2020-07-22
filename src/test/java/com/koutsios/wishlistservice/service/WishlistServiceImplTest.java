@@ -3,6 +3,7 @@ package com.koutsios.wishlistservice.service;
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.aNewWishlist;
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.aWishlist;
 import static com.koutsios.wishlistservice.fixture.WishlistFixture.anUpdateWishlist;
+import static java.util.Optional.empty;
 import static java.util.Optional.of;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -40,7 +41,7 @@ class WishlistServiceImplTest {
   private WishlistRepository repository;
 
   @Test
-  @DisplayName("newWishlist - Create new wishlist successfully")
+  @DisplayName("createWishlist - Create new wishlist successfully")
   void newWishlist_success() {
     when(repository.save(any(Wishlist.class))).thenReturn(aNewWishlist());
 
@@ -67,9 +68,9 @@ class WishlistServiceImplTest {
   }
 
   @Test
-  @DisplayName("getWishlist - Invalid wishlistId - WIshlistNotFoundException")
+  @DisplayName("getWishlist - Invalid wishlistId - WishlistNotFoundException")
   void getWishlist_InvalidWishlistId() {
-    when(repository.findById(anyString())).thenReturn(Optional.empty());
+    when(repository.findById(anyString())).thenReturn(empty());
 
     assertThrows(WishlistNotFoundException.class, () -> wishlistService.getWishlist("wishlistId"));
 
@@ -99,7 +100,7 @@ class WishlistServiceImplTest {
   @DisplayName("updateWishlist - Invalid wishlistId - WIshlistNotFoundException")
   void updateWishlist_InvalidWishlistId() {
     UpdateWishlist updateWishlist = anUpdateWishlist();
-    when(repository.findById(anyString())).thenReturn(Optional.empty());
+    when(repository.findById(anyString())).thenReturn(empty());
 
     assertThrows(WishlistNotFoundException.class, () -> wishlistService.updateWishlist("wishlistId", updateWishlist));
 

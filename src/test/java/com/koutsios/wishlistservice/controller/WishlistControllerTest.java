@@ -37,11 +37,11 @@ class WishlistControllerTest {
   @Autowired
   private MockMvc mockMvc;
 
-  @MockBean
-  private WishlistService wishlistService;
-
   @Autowired
   private ObjectMapper objectMapper;
+
+  @MockBean
+  private WishlistService wishlistService;
 
   @Test
   @DisplayName("POST Wishlist - 201 Created")
